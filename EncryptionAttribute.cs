@@ -10,21 +10,16 @@ namespace CreateAttribute
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class | AttributeTargets.Struct)]
     public class EncryptionAttribute : Attribute
     {
-        private static string className;
-        private object[] parametrs;
+        public static string ClassName;
+        public object[] Parametrs;
+        public IEncryptionService MyClassType;
 
         public EncryptionAttribute(string className, params object[] parametrs)
         {
             ClassName = className;
             Parametrs = parametrs;
+            MyClassType = Activator.CreateInstance(Type.GetType(className)) as IEncryptionService;
         }
-
-        public static string ClassName { get => className; set => className = value; }
-        public object[] Parametrs { get => parametrs; set => parametrs = value; }
-
-        public IEncryptionService MyClassType = Activator.CreateInstance(Type.GetType(className)) as IEncryptionService;
-
-       
 
         public void Encryption()
         {

@@ -14,13 +14,6 @@ namespace CreateAttribute
             [Encryption(className: "CreateAttribute.EncryptionService", parametrs: new object[] { "testfile.xml", test })]
             public const string test = "test";
 
-        
-            //[Encryption(className: "CreateAttribute.EncryptionService", parametrs: new object[] { "testfile.xml" })]
-            //private const string testdec = "n";
-
-
-
-
             public void GetAttribute(object obj)
             {
                 var filedInfo = typeof(TestAttribute).GetField(test); 
@@ -32,9 +25,6 @@ namespace CreateAttribute
                 }
 
                 encryptionAttribute.Encryption();
-                //encryptionAttribute.Decryption<string>();
-
-                //Console.WriteLine(testdec);
             }
         }
 
