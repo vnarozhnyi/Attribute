@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,26 +11,37 @@ namespace CreateAttribute
     {
         public class TestAttribute
         {
-            [Encryption(className:"EncryptionService", parametrs: new object[] { "testfile.xml", test, "key" })]
-            public static string test = "test";
+            [Encryption(className: "CreateAttribute.EncryptionService", parametrs: new object[] { "testfile.xml", test })]
+            public const string test = "test";
 
-            public void GetAttribute(Type t)
+        
+            //[Encryption(className: "CreateAttribute.EncryptionService", parametrs: new object[] { "testfile.xml" })]
+            //private const string testdec = "n";
+
+
+
+
+            public void GetAttribute(object obj)
             {
-                EncryptionAttribute MyAttribute = (EncryptionAttribute)Attribute.GetCustomAttribute(t, typeof(EncryptionAttribute));
+                var filedInfo = typeof(TestAttribute).GetField(test); 
+                var encryptionAttribute = filedInfo.GetCustomAttribute(typeof(EncryptionAttribute)) as EncryptionAttribute;
 
-                if (MyAttribute == null)
+                if(encryptionAttribute == null)
                 {
-                    Console.WriteLine("Attribute not fond");
+                    Console.WriteLine("Attribute not found");
                 }
 
-                MyAttribute.Encryption();
+                encryptionAttribute.Encryption();
+                //encryptionAttribute.Decryption<string>();
+
+                //Console.WriteLine(testdec);
             }
         }
 
         static void Main()
         {
             TestAttribute test = new TestAttribute();
-            test.GetAttribute(typeof(Program));
+            test.GetAttribute(TestAttribute.test); 
 
         }
     }

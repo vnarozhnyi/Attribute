@@ -8,26 +8,33 @@ namespace CreateAttribute
 {
     public interface IEncryptionService
     {
-        void Encrypt<T>(string filename, T obj, string encryptionKey);
-        T Decrypt<T>(string filename, string encryptionKey);
+        void Encrypt<T>(string filename, T obj);
+        T Decrypt<T>(string filename);
     }
-
+    [XmlTypeAttribute(AnonymousType = true)]
     public class EncryptionService : IEncryptionService
     {
-        public T Decrypt<T>(string filename, string encryptionKey)
+        
+        public T Decrypt<T>(string filename)
         {
-            var key = new DESCryptoServiceProvider();
-            var d = key.CreateDecryptor(Encoding.ASCII.GetBytes("64bitPas"), Encoding.ASCII.GetBytes(encryptionKey));
+            XmlRootAttribute xRoot = new XmlRootAttribute();
+            xRoot.ElementName = "anyType";
+            DESCryptoServiceProvider DESalg = new DESCryptoServiceProvider();
+            byte[] key = { 127, 101, 173, 226, 108, 89, 33, 128 };
+            byte[] keyIV = { 68, 160, 246, 137, 229, 210, 20, 239 };
+            var d = DESalg.CreateDecryptor(key, keyIV);
             using (var fs = File.Open(filename, FileMode.Open))
             using (var cs = new CryptoStream(fs, d, CryptoStreamMode.Read))
-                return (T)(new XmlSerializer(typeof(T))).Deserialize(cs);
+                return (T)(new XmlSerializer(typeof(T), xRoot)).Deserialize(cs);
         }
 
-        public void Encrypt<T>(string filename, T obj, string encryptionKey)
+        public void Encrypt<T>(string filename, T obj)
         {
-            var key = new DESCryptoServiceProvider();
-            var e = key.CreateEncryptor(Encoding.ASCII.GetBytes("64bitPas"), Encoding.ASCII.GetBytes(encryptionKey));
-            using (var fs = File.Open(filename, FileMode.Create))
+            DESCryptoServiceProvider DESalg = new DESCryptoServiceProvider();
+            byte[] key = { 127, 101, 173, 226, 108, 89, 33, 128 };
+            byte[] keyIV = {68, 160, 246, 137, 229, 210, 20, 239}; 
+            var e = DESalg.CreateEncryptor(key, keyIV); 
+            using (var fs = File.Open(filename, FileMode.Create))    
             using (var cs = new CryptoStream(fs, e, CryptoStreamMode.Write))
                 (new XmlSerializer(typeof(T))).Serialize(cs, obj);
         }

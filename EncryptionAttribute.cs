@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace CreateAttribute
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class | AttributeTargets.Struct)]
-    public class EncryptionAttribute : System.Attribute
+    public class EncryptionAttribute : Attribute
     {
-        public static string ClassName;
-        public object[] Parametrs;
+        private static string className;
+        private object[] parametrs;
 
         public EncryptionAttribute(string className, params object[] parametrs)
         {
@@ -19,16 +19,21 @@ namespace CreateAttribute
             Parametrs = parametrs;
         }
 
-        public IEncryptionService MyClassType = Activator.CreateInstance(Type.GetType(ClassName)) as IEncryptionService;
+        public static string ClassName { get => className; set => className = value; }
+        public object[] Parametrs { get => parametrs; set => parametrs = value; }
 
-       public void Encryption()
+        public IEncryptionService MyClassType = Activator.CreateInstance(Type.GetType(className)) as IEncryptionService;
+
+       
+
+        public void Encryption()
         {
-            MyClassType.Encrypt(Parametrs[1].ToString(), Parametrs[2], Parametrs[3].ToString());
+            MyClassType.Encrypt(Parametrs[0].ToString(), Parametrs[1]);
         }
 
-        //public T Decryption<T>()
-        //{
-        //    return MyClassType.Decrypt(Parametrs[1].ToString(), Parametrs[3].ToString());
-        //}
+        public T Decryption<T>()
+        {
+            return MyClassType.Decrypt<T>(Parametrs[0].ToString());
+        }
     }
 }
